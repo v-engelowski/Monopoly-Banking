@@ -27,3 +27,10 @@ Sollte ein Spieler aufgrund von Ereigniskarten Geld in den Pott legen müssen, w
 ## Geld vom Pott einsammeln
 
 Wenn ein Spieler auf das "Frei Parken" Feld kommt, darf dieser den gesamten Pott einsammeln. Dafür hält man erst die Karte vom Pott an das Lesegerät, und dann die Karte vom Spieler. Daraufhin erscheint eine Zahl auf dem LCD, die angibt, wie viel Geld im Pott ist. Der Spieler bestätigt die Transaktion mit einer Taste.
+
+
+# Program
+
+## Flowchart
+
+<img src='./img/Monopoly-Banking-Projektwoche.svg'>
