@@ -33,4 +33,4 @@ Wenn ein Spieler auf das "Frei Parken" Feld kommt, darf dieser den gesamten Pott
 
 ## Flowchart
 
-<img src='./img/Monopoly-Banking-Projektwoche.svg'>
+<img src='./img/Monopoly-Banking-Projektwoche.png'>
