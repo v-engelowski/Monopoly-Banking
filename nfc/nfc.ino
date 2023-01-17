@@ -104,6 +104,8 @@ void setup() {  // Beginn Setup Funktion
   }
 
   lcd_print(WELCOME_TEXT1, WELCOME_TEXT2, 3000);
+
+  readNFC();
 }
 
 
@@ -118,7 +120,18 @@ void loop() {
   while (1) {
     userInput = getKeypadInput();
 
-    if (userInput == '*') break;  //do NFC reading stuff
+    if (userInput == '*')   //do NFC reading stuff
+    {
+      lcd_print("Warte auf", "Card");      
+      id1 = readNFC();
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Spieler " + String(id1) + " erkannt");
+
+
+
+
+    }
     if (userInput == '#') break;  // do NFC reading stuff
   }
 
@@ -189,10 +202,6 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
       uint8_t complete = (first * 10) + second;  //concats two ints
 
       DEBUG_PRINT(complete);
-
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.println(complete);
 
       return complete;
     }
