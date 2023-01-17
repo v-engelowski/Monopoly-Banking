@@ -120,17 +120,13 @@ void loop() {
   while (1) {
     userInput = getKeypadInput();
 
-    if (userInput == '*')   //do NFC reading stuff
+    if (userInput == '*')  //do NFC reading stuff
     {
-      lcd_print("Warte auf", "Card");      
+      lcd_print("Warte auf", "Card");
       id1 = readNFC();
       lcd.clear();
-      lcd.setCursor(0,0);
+      lcd.setCursor(0, 0);
       lcd.print("Spieler " + String(id1) + " erkannt");
-
-
-
-
     }
     if (userInput == '#') break;  // do NFC reading stuff
   }
@@ -184,26 +180,28 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
   uint8_t uid[8];
   uint8_t uidLength;
 
-  while (!success) {
+  uint8_t complete;
+
+  while (!complete) {
     success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
-  }
 
 
-  if (success) {
-    if (uidLength == 7) {
+    if (success) {
+      if (uidLength == 7) {
 
-      uint8_t data[32];
+        uint8_t data[32];
 
-      nfc.ntag2xx_ReadPage(6, data);  // Read block 6 - the first user writable block
+        nfc.ntag2xx_ReadPage(6, data);  // Read block 6 - the first user writable block
 
-      uint8_t first = (char)data[0] - '0';  // Converts the first 2 HEX bits to char and subtracts '0' to get the int value
-      uint8_t second = (char)data[1] - '0';
+        uint8_t first = (char)data[0] - '0';  // Converts the first 2 HEX bits to char and subtracts '0' to get the int value
+        uint8_t second = (char)data[1] - '0';
 
-      uint8_t complete = (first * 10) + second;  //concats two ints
+        uint8_t complete = (first * 10) + second;  //concats two ints
 
-      DEBUG_PRINT(complete);
+        DEBUG_PRINT(complete);
 
-      return complete;
+        return complete;
+      }
     }
   }
 }
