@@ -58,7 +58,7 @@ const uint8_t parkingID = 4;
 const uint16_t defaultMoney = 1500;
 const uint16_t defaultMoneyBank = 15000;
 
-uint16_t bank[12];
+uint16_t bank[13];
 
 
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erzeugen mit SPI Protokoll
@@ -92,59 +92,114 @@ void setup() {  // Beginn Setup Funktion
   nfc.SAMConfig();                           // Konfiguriere Board RFID Tags zu lesen
 
   // Bank init
-  for (uint8_t i = 0; i < playerCount; i++) {
+  for (uint8_t i = 1; i < playerCount + 1; i++) {
     if (i < 4 && i != 3) bank[i] = 0;
     if (i == 3) bank[i] = defaultMoneyBank;
     if (i > 4) bank[i] = defaultMoney;
   }
 
   DEBUG_PRINTLN("Bank Init complete:");
-  for (uint8_t i = firstValidPlayerID - 2; i < playerCount; i++) {
+  for (uint8_t i = 3; i < playerCount + 1; i++) {
     DEBUG_PRINTLN("ID " + String(i) + " hat " + String(bank[i]) + " Credits");
   }
 
   lcd_print(WELCOME_TEXT1, WELCOME_TEXT2, 3000);
-
-  readNFC();
 }
 
 
 void loop() {
-  char userInput;
-  uint8_t id1;
-  uint8_t id2;
-
-
-  lcd_print(WAIT_INPUT_TEXT1, WAIT_INPUT_TEXT2, 0);
-
   while (1) {
+    char userInput;
+    uint8_t id1;
+    uint8_t id2;
+    char name[] = "Spieler";
+    uint16_t transferAmount;
+    bool transactionSuccess;
+
+    lcd_print(WAIT_INPUT_TEXT1, WAIT_INPUT_TEXT2, 0);
+
     userInput = getKeypadInput();
 
-    if (userInput == '*')  //do NFC reading stuff
-    {
-      lcd_print("Warte auf", "Card");
+    if (userInput == '*') {
+      lcd_print("Warte auf", "Sender");
       id1 = readNFC();
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Spieler " + String(id1) + " erkannt");
+      lcd.print("Spieler " + String(id1));
+      lcd.setCursor(0, 1);
+      lcd.print("erkannt");
+      delay(1000);
+
+      lcd_print("Warte auf", "Empfaenger");
+      id2 = readNFC();
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Spieler " + String(id2));
+      lcd.setCursor(0, 1);
+      lcd.print("erkannt");
+      delay(1000);
+
+      lcd_print("Betrag", "");
+      transferAmount = cashinput();
+
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Bestaetigen mit");
+      lcd.setCursor(0, 1);
+      lcd.print("'#'");
+
+      userInput = getKeypadInput();
+
+      if (userInput == '#') {
+        lcd_print("Ueberweising in", "bearbeitung...");
+
+        transactionSuccess = transaction(id1, id2, transferAmount);
+
+        if (transactionSuccess) lcd_print("Erfolgreich", "");
+        else lcd_print("Nicht genug", "Credits");
+
+      } else lcd_print("Ueberweisung", "abgebrochen");
+
+      debugPrintBank();
+
+      continue;
     }
-    if (userInput == '#') break;  // do NFC reading stuff
+
+    if (userInput == '#') {
+      lcd_print("Bitte Card", "dranhalten");
+
+      id1 = readNFC();
+
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Spieler " + String(id1));
+      lcd.setCursor(0, 1);
+      lcd.print("erkannt");
+      delay(500);
+
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      DEBUG_PRINTLN(String(bank[12]));
+      lcd.print(String(bank[id1]) + " Credits");
+      lcd.setCursor(0, 1);
+      lcd.print("auf dem Konto");
+      delay(2000);
+
+      continue;
+    }
+    if (userInput == 'A') {
+      lcd_print("Bitte Card", "dranhalten");
+      id1 = readNFC();
+
+      transactionSuccess = transaction(bankID, id1, 200);
+
+      if (!transactionSuccess) lcd_print("Nicht genug C", "in der Bank");
+      else lcd_print("200C wurden", "ueberwiesen", 2000);
+
+      continue;
+    }
   }
-
-#ifdef DEBUG
-  DEBUG_PRINTLN(userInput);
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Pressed: ");
-  lcd.setCursor(0, 1);
-  lcd.print(userInput);
-
-  delay(1000);
-
-#endif
 }
-
 
 /*
   lcd_print
@@ -198,8 +253,6 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
 
         uint8_t complete = (first * 10) + second;  //concats two ints
 
-        DEBUG_PRINT(complete);
-
         return complete;
       }
     }
@@ -216,8 +269,6 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
 */
 
 char getKeypadInput() {
-  DEBUG_PRINTLN("Waiting for user input");
-
   char keyInput;
   uint8_t validKey = 0;
 
@@ -228,8 +279,6 @@ char getKeypadInput() {
       if (keyInput == validChars[i]) validKey = 1;
     }
   }
-
-  DEBUG_PRINTLN(keyInput);
 
   return keyInput;
 }
@@ -260,6 +309,36 @@ bool transaction(uint8_t sender, uint8_t receiver, uint16_t amount) {
   return true;
 }
 
+int cashinput() {
+  char input[5];
+  uint16_t total = 0;
+  uint8_t digitCount = 0;
+
+  char key;
+
+  lcd.setCursor(0, 1);
+  while (1) {
+
+    key = getKeypadInput();
+
+    if (key == '#' | digitCount >= 5) break;
+    if (key == 'A' | key == 'B' | key == 'C' | key == 'D') continue;
+
+    // input[digitCount] = ((int)(char)key - '0');
+    input[digitCount] = key;
+
+    total = String(input).toInt();
+
+    digitCount++;
+
+
+    lcd.print(key);
+  }
+
+  // DEBUG_PRINTLN(total);
+
+  return total;
+}
 
 #ifdef DEBUG
 /*
@@ -269,10 +348,16 @@ bool transaction(uint8_t sender, uint8_t receiver, uint16_t amount) {
 */
 
 void debugPrintBank() {
-  for (uint8_t i = firstValidPlayerID - 2; i < playerCount; i++) {
-    if (i == 3) DEBUG_PRINTLN("Bank has " + String(bank[i]) + " Credits");
-    if (i == 4) DEBUG_PRINTLN("Parking has " + String(bank[i]) + " Credits");
-    else DEBUG_PRINTLN("Player " + String(i) + " has " + String(bank[i]) + " Credits");
+  for (uint8_t i = 3; i < playerCount; i++) {
+    if (i == 3) {
+      DEBUG_PRINTLN("Bank has " + String(bank[i]) + " Credits");
+      continue;
+    }
+    if (i == 4) {
+      DEBUG_PRINTLN("Parking has " + String(bank[i]) + " Credits");
+      continue;
+    }
+    DEBUG_PRINTLN("Player " + String(i) + " has " + String(bank[i]) + " Credits");
   }
 }
 #endif
