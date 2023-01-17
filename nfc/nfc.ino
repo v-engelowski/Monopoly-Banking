@@ -112,20 +112,18 @@ void loop() {                               // Beginne Loop-Funktion
       //   Serial.println("");
       // }
 
-      nfc.ntag2xx_ReadPage(6, data);      // Read block 6 - the first user writable block
+      nfc.ntag2xx_ReadPage(6, data);  // Read block 6 - the first user writable block
 
-      int first = (char)data[0] - '0';     // Converts the first 2 HEX bits to char and subtracts '0' to get the int value
+      int first = (char)data[0] - '0';  // Converts the first 2 HEX bits to char and subtracts '0' to get the int value
       int second = (char)data[1] - '0';
 
-      int complete = (first * 10) + second;   //concats two ints
+      int complete = (first * 10) + second;  //concats two ints
 
       Serial.print(complete);
 
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print(complete);
-
-
     }
   }  // Ende der IF Abfrage/Schleife
 
