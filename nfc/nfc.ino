@@ -64,7 +64,7 @@ const uint16_t defaultMoneyBank = 15000;
 uint16_t bank[13];
 
 
-const char names[][16] = {"", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
+const char names[][16] = { "", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
 
 
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erzeugen mit SPI Protokoll
@@ -95,7 +95,7 @@ void setup() {  // Beginn Setup Funktion
   DEBUG_PRINT('.');
   DEBUG_PRINTLN((versiondata >> 8) & 0xFF);  //
   DEBUG_PRINTLN("");
-  nfc.SAMConfig();                           // Konfiguriere Board RFID Tags zu lesen
+  nfc.SAMConfig();  // Konfiguriere Board RFID Tags zu lesen
 
   // Bank init
   for (uint8_t i = 1; i < playerCount + 1; i++) {
@@ -146,7 +146,8 @@ void loop() {
       delay(DEFAULT_DELAY);
 
       lcd_print("Betrag", "");
-      transferAmount = cashinput();
+      if (cashinput) transferAmount = cashinput();
+      else continue;
 
       lcd.clear();
       lcd.setCursor(0, 0);
@@ -327,7 +328,13 @@ int cashinput() {
     key = getKeypadInput();
 
     if (key == '#' | digitCount >= 5) break;
-    if (key == 'A' | key == 'B' | key == 'C' | key == 'D') continue;
+    if (key == 'A' | key == 'B' | key == 'C') continue;
+    if (key == '*') return 0;
+    if (key == 'D' && digitCount > 0) {
+      input[digitCount - 1] = '\0';
+      digitCount--;
+      continue;
+    }
 
     // input[digitCount] = ((int)(char)key - '0');
     input[digitCount] = key;
