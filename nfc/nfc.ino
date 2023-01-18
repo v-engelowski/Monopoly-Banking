@@ -8,6 +8,9 @@
 #define DEBUG_PRINTLN(x)
 #endif
 
+
+#define DEFAULT_DELAY 1500
+
 // LCD has only 16 chars
 #define WELCOME_TEXT1 "Willkommen zu"
 #define WELCOME_TEXT2 "Emscopoly!"
@@ -61,7 +64,7 @@ const uint16_t defaultMoneyBank = 15000;
 uint16_t bank[13];
 
 
-const char names[][16] = {"", "", "", "Bank", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
+const char names[][16] = {"", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
 
 
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erzeugen mit SPI Protokoll
@@ -86,12 +89,12 @@ void setup() {  // Beginn Setup Funktion
       ;
   }
 
-  DEBUG_PRINT("NFC Reader found!");
-  DEBUG_PRINTLN((versiondata >> 24) & 0xFF);  // Sende Text und Versionsinfos an seriellen
+  DEBUG_PRINTLN("NFC Reader found!");
   DEBUG_PRINT("Firmware ver. ");
   DEBUG_PRINT((versiondata >> 16) & 0xFF);  // Monitor, wenn Antwort vom Board kommt
   DEBUG_PRINT('.');
   DEBUG_PRINTLN((versiondata >> 8) & 0xFF);  //
+  DEBUG_PRINTLN("");
   nfc.SAMConfig();                           // Konfiguriere Board RFID Tags zu lesen
 
   // Bank init
@@ -128,19 +131,19 @@ void loop() {
       id1 = readNFC();
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Spieler " + String(id1));
+      lcd.print(names[id1]);
       lcd.setCursor(0, 1);
       lcd.print("erkannt");
-      delay(1000);
+      delay(DEFAULT_DELAY);
 
       lcd_print("Warte auf", "Empfaenger");
       id2 = readNFC();
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Spieler " + String(id2));
+      lcd.print(names[id2]);
       lcd.setCursor(0, 1);
       lcd.print("erkannt");
-      delay(1000);
+      delay(DEFAULT_DELAY);
 
       lcd_print("Betrag", "");
       transferAmount = cashinput();
@@ -175,14 +178,13 @@ void loop() {
 
       lcd.clear();
       lcd.setCursor(0, 0);
-      lcd.print("Spieler " + String(id1));
+      lcd.print(names[id1]);
       lcd.setCursor(0, 1);
       lcd.print("erkannt");
-      delay(500);
+      delay(DEFAULT_DELAY);
 
       lcd.clear();
       lcd.setCursor(0, 0);
-      DEBUG_PRINTLN(String(bank[12]));
       lcd.print(String(bank[id1]) + " Credits");
       lcd.setCursor(0, 1);
       lcd.print("auf dem Konto");
@@ -343,9 +345,6 @@ int cashinput() {
   return total;
 }
 
-char[] getName(uint8_t _id) {
-return names[_id];
-};
 
 #ifdef DEBUG
 /*
