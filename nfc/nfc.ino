@@ -61,6 +61,9 @@ const uint16_t defaultMoneyBank = 15000;
 uint16_t bank[13];
 
 
+const char names[][16] = {"", "", "", "Bank", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
+
+
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erzeugen mit SPI Protokoll
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -339,6 +342,10 @@ int cashinput() {
 
   return total;
 }
+
+char[] getName(uint8_t _id) {
+return names[_id];
+};
 
 #ifdef DEBUG
 /*
