@@ -52,16 +52,18 @@ const char validChars[] = { '1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9
 Keypad keypad = Keypad(makeKeymap(KEYS), ROW_PINS, COL_PINS, ROW, COL);
 
 // Banking system
+const uint8_t validIDs[] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
 const uint8_t playerCount = 12;
 const uint8_t firstValidPlayerID = 5;
 
 const uint8_t bankID = 3;
 const uint8_t parkingID = 4;
 
-const uint16_t defaultMoney = 1500;
-const uint16_t defaultMoneyBank = 15000;
+const uint32_t defaultMoney = 30000;
+const uint32_t defaultMoneyBank = 600000;
 
-uint16_t bank[13];
+uint32_t bank[13];
 
 
 const char names[][16] = { "", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
@@ -116,10 +118,9 @@ void setup() {  // Beginn Setup Funktion
 void loop() {
   while (1) {
     char userInput;
-    uint8_t id1;
-    uint8_t id2;
-    char name[] = "Spieler";
-    uint16_t transferAmount;
+    uint8_t id1 = 0;
+    uint8_t id2 = 0;
+    uint32_t transferAmount = 0;
     bool transactionSuccess;
 
     lcd_print(WAIT_INPUT_TEXT1, WAIT_INPUT_TEXT2, 0);
@@ -128,7 +129,7 @@ void loop() {
 
     if (userInput == '*') {
       lcd_print("Warte auf", "Sender");
-      id1 = readNFC();
+      while(!id1) id1 = readNFC();
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print(names[id1]);
@@ -137,7 +138,7 @@ void loop() {
       delay(DEFAULT_DELAY);
 
       lcd_print("Warte auf", "Empfaenger");
-      id2 = readNFC();
+      while(!id2) id2 = readNFC();
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print(names[id2]);
@@ -259,10 +260,17 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
 
         uint8_t complete = (first * 10) + second;  //concats two ints
 
-        return complete;
+        for (uint8_t i = 0; i < sizeof(validIDs); i++) {
+          DEBUG_PRINTLN(String(i));
+          if (validIDs[i] == complete) return complete;
+        }
+
+        complete = 0;
       }
     }
   }
+
+  return complete;
 }
 
 
@@ -303,9 +311,9 @@ char getKeypadInput() {
 
 */
 
-bool transaction(uint8_t sender, uint8_t receiver, uint16_t amount) {
-  uint16_t senderCredits = bank[sender];
-  uint16_t receiverCredits = bank[receiver];
+bool transaction(uint8_t sender, uint8_t receiver, uint32_t amount) {
+  uint32_t senderCredits = bank[sender];
+  uint32_t receiverCredits = bank[receiver];
 
   if (senderCredits < amount) return false;
 
@@ -315,9 +323,10 @@ bool transaction(uint8_t sender, uint8_t receiver, uint16_t amount) {
   return true;
 }
 
-int cashinput() {
-  char input[5];
-  uint16_t total = 0;
+
+uint32_t cashinput() {
+  char input[6];
+  uint32_t total = 0;
   uint8_t digitCount = 0;
 
   char key;
@@ -327,14 +336,10 @@ int cashinput() {
 
     key = getKeypadInput();
 
-    if (key == '#' | digitCount >= 5) break;
+    if (key == '#') break;
+    if (digitCount >= 6) continue;
     if (key == 'A' | key == 'B' | key == 'C') continue;
     if (key == '*') return 0;
-    if (key == 'D' && digitCount > 0) {
-      input[digitCount - 1] = '\0';
-      digitCount--;
-      continue;
-    }
 
     // input[digitCount] = ((int)(char)key - '0');
     input[digitCount] = key;
@@ -347,7 +352,7 @@ int cashinput() {
     lcd.print(key);
   }
 
-  // DEBUG_PRINTLN(total);
+  DEBUG_PRINTLN(total);
 
   return total;
 }
