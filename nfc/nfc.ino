@@ -73,6 +73,12 @@ Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erz
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
+/*
+  Function setup
+
+  One time set up of variabled and objects
+*/
+
 void setup() {  // Beginn Setup Funktion
 #ifdef DEBUG
   Serial.begin(115200);  // Öffne serielle Übertragung mit 115200 Baud (ser Monitor gleiche Baud Einstellung!)
@@ -114,6 +120,12 @@ void setup() {  // Beginn Setup Funktion
   lcd_print(WELCOME_TEXT1, WELCOME_TEXT2, 3000);
 }
 
+
+/*
+  Function loop
+
+  Main loop function used by arduino
+*/
 
 void loop() {
   while (1) {
@@ -261,7 +273,7 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
         uint8_t complete = (first * 10) + second;  //concats two ints
 
         for (uint8_t i = 0; i < sizeof(validIDs); i++) {
-          DEBUG_PRINTLN(String(i));
+          Serial.println(String(i));    // !!do not remove, program doesn't work without it for some reason!!
           if (validIDs[i] == complete) return complete;
         }
 
@@ -323,6 +335,14 @@ bool transaction(uint8_t sender, uint8_t receiver, uint32_t amount) {
   return true;
 }
 
+
+/*
+  Function: cashInput
+
+  Concats chars pressed on Keypad and convertst them to int
+
+  returns: int value of number char array
+*/
 
 uint32_t cashinput() {
   char input[6];
