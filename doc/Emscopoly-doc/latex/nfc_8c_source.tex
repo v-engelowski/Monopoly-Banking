@@ -1,0 +1,383 @@
+\hypertarget{nfc_8c_source}{}\doxysection{nfc.\+c}
+\label{nfc_8c_source}\index{C:/Users/ForZa/source/repos/Monopoly-\/Banking/doc/nfc.c@{C:/Users/ForZa/source/repos/Monopoly-\/Banking/doc/nfc.c}}
+\mbox{\hyperlink{nfc_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00001}\mbox{\hyperlink{nfc_8c_ad72dbcf6d0153db1b8d8a58001feed83}{00001}}\ \textcolor{preprocessor}{\#define\ DEBUG\ 1}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00003}00003\ \textcolor{preprocessor}{\#ifdef\ DEBUG}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00004}\mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{00004}}\ \textcolor{preprocessor}{\#define\ DEBUG\_PRINT(x)\ Serial.print(x)}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00005}\mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{00005}}\ \textcolor{preprocessor}{\#define\ DEBUG\_PRINTLN(x)\ Serial.println(x)}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00006}00006\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00007}00007\ \textcolor{preprocessor}{\#define\ DEBUG\_PRINT(x)}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00008}00008\ \textcolor{preprocessor}{\#define\ DEBUG\_PRINTLN(x)}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00009}00009\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00012}\mbox{\hyperlink{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}{00012}}\ \textcolor{preprocessor}{\#define\ DEFAULT\_DELAY\ 1500}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00014}00014\ \textcolor{comment}{//\ LCD\ has\ only\ 16\ chars}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00015}\mbox{\hyperlink{nfc_8c_ae64dee1e0606f4013ca452378ccdcb6a}{00015}}\ \textcolor{preprocessor}{\#define\ WELCOME\_TEXT1\ "{}Willkommen\ zu"{}}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00016}\mbox{\hyperlink{nfc_8c_ae694182bf59e2930d63507e8269b23e1}{00016}}\ \textcolor{preprocessor}{\#define\ WELCOME\_TEXT2\ "{}Emscopoly!"{}}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00018}\mbox{\hyperlink{nfc_8c_ac1b2359f1edcdae41671e5536f6b9116}{00018}}\ \textcolor{preprocessor}{\#define\ WAIT\_INPUT\_TEXT1\ "{}*\ -\/\ Transaktion"{}}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00019}\mbox{\hyperlink{nfc_8c_a5f92f14951429b8655a6a6cd085a98cb}{00019}}\ \textcolor{preprocessor}{\#define\ WAIT\_INPUT\_TEXT2\ "{}\#\ -\/\ Kontostand"{}}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ <Wire.h>}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ <SPI.h>}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ <Adafruit\_PN532.h>}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00025}00025\ \textcolor{preprocessor}{\#include\ <LiquidCrystal\_I2C.h>}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00026}00026\ \textcolor{preprocessor}{\#include\ <Keypad.h>}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00028}00028\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{keywordtype}{char}\ text1[],\ \textcolor{keywordtype}{char}\ text2[],\ uint16\_t\ timeout\ =\ 1000);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00030}00030\ \textcolor{comment}{//\ NP532}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00031}\mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{00031}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{PN532\_SCK}}\ =\ 2;\ \ \ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00032}\mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{00032}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{PN532\_MOSI}}\ =\ 3;\ \ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00033}\mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{00033}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{PN532\_SS}}\ =\ 4;\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00034}\mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{00034}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{PN532\_MISO}}\ =\ 5;\ \ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00036}00036\ \textcolor{comment}{//\ Keypad}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00037}\mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{00037}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}}\ =\ 4;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00038}\mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{00038}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}\ =\ 4;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00040}\mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{00040}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{COL\_PINS}}[]\ =\ \{\ 6,\ 7,\ 8,\ 9\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00041}\mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{00041}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{byte}\ \mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{ROW\_PINS}}[]\ =\ \{\ 10,\ 11,\ 12,\ 13\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00043}\mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{00043}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{KEYS}}[\mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}][\mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}}]\ =\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00044}00044\ \ \ \{\ \textcolor{charliteral}{'D'},\ \textcolor{charliteral}{'\#'},\ \textcolor{charliteral}{'0'},\ \textcolor{charliteral}{'*'}\ \},}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00045}00045\ \ \ \{\ \textcolor{charliteral}{'C'},\ \textcolor{charliteral}{'9'},\ \textcolor{charliteral}{'8'},\ \textcolor{charliteral}{'7'}\ \},}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00046}00046\ \ \ \{\ \textcolor{charliteral}{'B'},\ \textcolor{charliteral}{'6'},\ \textcolor{charliteral}{'5'},\ \textcolor{charliteral}{'4'}\ \},}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00047}00047\ \ \ \{\ \textcolor{charliteral}{'A'},\ \textcolor{charliteral}{'3'},\ \textcolor{charliteral}{'2'},\ \textcolor{charliteral}{'1'}\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00048}00048\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00050}\mbox{\hyperlink{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}{00050}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}{validChars}}[]\ =\ \{\ \textcolor{charliteral}{'1'},\ \textcolor{charliteral}{'2'},\ \textcolor{charliteral}{'3'},\ \textcolor{charliteral}{'A'},\ \textcolor{charliteral}{'4'},\ \textcolor{charliteral}{'5'},\ \textcolor{charliteral}{'6'},\ \textcolor{charliteral}{'B'},\ \textcolor{charliteral}{'7'},\ \textcolor{charliteral}{'8'},\ \textcolor{charliteral}{'9'},\ \textcolor{charliteral}{'C'},\ \textcolor{charliteral}{'*'},\ \textcolor{charliteral}{'0'},\ \textcolor{charliteral}{'\#'},\ \textcolor{charliteral}{'D'}\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00052}\mbox{\hyperlink{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}{00052}}\ Keypad\ \mbox{\hyperlink{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}{keypad}}\ =\ Keypad(makeKeymap(\mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{KEYS}}),\ \mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{ROW\_PINS}},\ \mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{COL\_PINS}},\ \mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}},\ \mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00054}00054\ \textcolor{comment}{//\ Banking\ system}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00055}\mbox{\hyperlink{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}{00055}}\ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}{validIDs}}[]\ =\ \{\ 3,\ 4,\ 5,\ 6,\ 7,\ 8,\ 9,\ 10,\ 11,\ 12\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00057}\mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{00057}}\ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{playerCount}}\ =\ 12;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00058}\mbox{\hyperlink{nfc_8c_a763f0e01a6efa2ab6f875689d19920c6}{00058}}\ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_a763f0e01a6efa2ab6f875689d19920c6}{firstValidPlayerID}}\ =\ 5;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00060}\mbox{\hyperlink{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}{00060}}\ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}{bankID}}\ =\ 3;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00061}\mbox{\hyperlink{nfc_8c_a21e3e966d47c93aa7e72c0b455dc1fe3}{00061}}\ \textcolor{keyword}{const}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_a21e3e966d47c93aa7e72c0b455dc1fe3}{parkingID}}\ =\ 4;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00063}\mbox{\hyperlink{nfc_8c_a48b4374e957b25684025bd89a5cebe96}{00063}}\ \textcolor{keyword}{const}\ uint32\_t\ \mbox{\hyperlink{nfc_8c_a48b4374e957b25684025bd89a5cebe96}{defaultMoney}}\ =\ 30000;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00064}\mbox{\hyperlink{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}{00064}}\ \textcolor{keyword}{const}\ uint32\_t\ \mbox{\hyperlink{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}{defaultMoneyBank}}\ =\ 600000;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00066}\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{00066}}\ uint32\_t\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[13];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00069}\mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{00069}}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{names}}[][16]\ =\ \{\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}Stonks"{}},\ \textcolor{stringliteral}{"{}Parken"{}},\ \textcolor{stringliteral}{"{}BuegelEisen"{}},\ \textcolor{stringliteral}{"{}NikeAirMax"{}},\ \textcolor{stringliteral}{"{}Aida"{}},\ \textcolor{stringliteral}{"{}Korken"{}},\ \textcolor{stringliteral}{"{}Zylinder"{}},\ \textcolor{stringliteral}{"{}Excavator"{}},\ \textcolor{stringliteral}{"{}La\ Tortuga"{}},\ \textcolor{stringliteral}{"{}Big\ D"{}}\ \};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00072}\mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{00072}}\ Adafruit\_PN532\ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}(\mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{PN532\_SCK}},\ \mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{PN532\_MISO}},\ \mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{PN532\_MOSI}},\ \mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{PN532\_SS}});\ \ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00073}\mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{00073}}\ LiquidCrystal\_I2C\ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}(0x27,\ 16,\ 2);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00082}\mbox{\hyperlink{nfc_8c_a4fc01d736fe50cf5b977f755b675f11d}{00082}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{nfc_8c_a4fc01d736fe50cf5b977f755b675f11d}{setup}}()\ \{\ \ \textcolor{comment}{//\ Beginn\ Setup\ Funktion}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00083}00083\ \textcolor{preprocessor}{\#ifdef\ DEBUG}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00084}00084\ \ \ Serial.begin(115200);\ \ \textcolor{comment}{//\ Öffne\ serielle\ Übertragung\ mit\ 115200\ Baud\ (ser\ Monitor\ gleiche\ Baud\ Einstellung!)}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00085}00085\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00087}00087\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.init();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00088}00088\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setBacklight(1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00090}00090\ \ \ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}.begin();\ \ \textcolor{comment}{//\ Beginne\ Kommunikation\ mit\ RFID\ Leser}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00092}00092\ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ versiondata\ =\ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}.getFirmwareVersion();\ \ \textcolor{comment}{//\ Lese\ Versionsnummer\ der\ Firmware\ aus}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00094}00094\ \ \ \textcolor{keywordflow}{if}\ (!versiondata)\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Wenn\ keine\ Antwort\ kommt}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00095}00095\ \ \ \ \ \mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{DEBUG\_PRINT}}(\textcolor{stringliteral}{"{}Kann\ kein\ Board\ finden\ !"{}});\ \ \textcolor{comment}{//\ Sende\ Text\ "{}Kann\ kein..."{}\ an\ seriellen\ Monitor}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00096}00096\ \ \ \ \ \textcolor{keywordflow}{while}\ (1)}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00097}00097\ \ \ \ \ \ \ ;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00098}00098\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00100}00100\ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}NFC\ Reader\ found!"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00101}00101\ \ \ \mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{DEBUG\_PRINT}}(\textcolor{stringliteral}{"{}Firmware\ ver.\ "{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00102}00102\ \ \ \mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{DEBUG\_PRINT}}((versiondata\ >>\ 16)\ \&\ 0xFF);\ \ \textcolor{comment}{//\ Monitor,\ wenn\ Antwort\ vom\ Board\ kommt}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00103}00103\ \ \ \mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{DEBUG\_PRINT}}(\textcolor{charliteral}{'.'});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00104}00104\ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}((versiondata\ >>\ 8)\ \&\ 0xFF);\ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00105}00105\ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00106}00106\ \ \ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}.SAMConfig();\ \ \textcolor{comment}{//\ Konfiguriere\ Board\ RFID\ Tags\ zu\ lesen}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00108}00108\ \ \ \textcolor{comment}{//\ Bank\ init}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00109}00109\ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ i\ =\ 1;\ i\ <\ \mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{playerCount}}\ +\ 1;\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00110}00110\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ <\ 4\ \&\&\ i\ !=\ 3)\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i]\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00111}00111\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ ==\ 3)\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i]\ =\ \mbox{\hyperlink{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}{defaultMoneyBank}};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00112}00112\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ >\ 4)\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i]\ =\ \mbox{\hyperlink{nfc_8c_a48b4374e957b25684025bd89a5cebe96}{defaultMoney}};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00113}00113\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00115}00115\ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}Bank\ Init\ complete:"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00116}00116\ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ i\ =\ 3;\ i\ <\ \mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{playerCount}}\ +\ 1;\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00117}00117\ \ \ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}ID\ "{}}\ +\ String(i)\ +\ \textcolor{stringliteral}{"{}\ hat\ "{}}\ +\ String(\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i])\ +\ \textcolor{stringliteral}{"{}\ Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00118}00118\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00120}00120\ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\mbox{\hyperlink{nfc_8c_ae64dee1e0606f4013ca452378ccdcb6a}{WELCOME\_TEXT1}},\ \mbox{\hyperlink{nfc_8c_ae694182bf59e2930d63507e8269b23e1}{WELCOME\_TEXT2}},\ 3000);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00121}00121\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00130}\mbox{\hyperlink{nfc_8c_afe461d27b9c48d5921c00d521181f12f}{00130}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{nfc_8c_afe461d27b9c48d5921c00d521181f12f}{loop}}()\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00131}00131\ \ \ \textcolor{keywordflow}{while}\ (1)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00132}00132\ \ \ \ \ \textcolor{keywordtype}{char}\ userInput;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00133}00133\ \ \ \ \ uint8\_t\ id1\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00134}00134\ \ \ \ \ uint8\_t\ id2\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00135}00135\ \ \ \ \ uint32\_t\ transferAmount\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00136}00136\ \ \ \ \ \textcolor{keywordtype}{bool}\ transactionSuccess;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00138}00138\ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\mbox{\hyperlink{nfc_8c_ac1b2359f1edcdae41671e5536f6b9116}{WAIT\_INPUT\_TEXT1}},\ \mbox{\hyperlink{nfc_8c_a5f92f14951429b8655a6a6cd085a98cb}{WAIT\_INPUT\_TEXT2}},\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00140}00140\ \ \ \ \ userInput\ =\ \mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{getKeypadInput}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00142}00142\ \ \ \ \ \textcolor{keywordflow}{if}\ (userInput\ ==\ \textcolor{charliteral}{'*'})\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00143}00143\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Warte\ auf"{}},\ \textcolor{stringliteral}{"{}Sender"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00144}00144\ \ \ \ \ \ \ \textcolor{keywordflow}{while}(!id1)\ id1\ =\ \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{readNFC}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00145}00145\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00146}00146\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00147}00147\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{names}}[id1]);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00148}00148\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00149}00149\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}erkannt"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00150}00150\ \ \ \ \ \ \ delay(\mbox{\hyperlink{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}{DEFAULT\_DELAY}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00152}00152\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Warte\ auf"{}},\ \textcolor{stringliteral}{"{}Empfaenger"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00153}00153\ \ \ \ \ \ \ \textcolor{keywordflow}{while}(!id2)\ id2\ =\ \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{readNFC}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00154}00154\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00155}00155\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00156}00156\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{names}}[id2]);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00157}00157\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00158}00158\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}erkannt"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00159}00159\ \ \ \ \ \ \ delay(\mbox{\hyperlink{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}{DEFAULT\_DELAY}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00161}00161\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Betrag"{}},\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00162}00162\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{nfc_8c_adca3813c15127121e34f92ea2682930f}{cashinput}})\ transferAmount\ =\ \mbox{\hyperlink{nfc_8c_adca3813c15127121e34f92ea2682930f}{cashinput}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00163}00163\ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00165}00165\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00166}00166\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00167}00167\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}Bestaetigen\ mit"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00168}00168\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00169}00169\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}'\#'"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00171}00171\ \ \ \ \ \ \ userInput\ =\ \mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{getKeypadInput}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00173}00173\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (userInput\ ==\ \textcolor{charliteral}{'\#'})\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00174}00174\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Ueberweising\ in"{}},\ \textcolor{stringliteral}{"{}bearbeitung..."{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00176}00176\ \ \ \ \ \ \ \ \ transactionSuccess\ =\ \mbox{\hyperlink{nfc_8c_a25041a1f318b71cddf8da6e65260b343}{transaction}}(id1,\ id2,\ transferAmount);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (transactionSuccess)\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Erfolgreich"{}},\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00179}00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Nicht\ genug"{}},\ \textcolor{stringliteral}{"{}Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00181}00181\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Ueberweisung"{}},\ \textcolor{stringliteral}{"{}abgebrochen"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00182}00182\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00183}00183\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}{debugPrintBank}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00185}00185\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00186}00186\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00188}00188\ \ \ \ \ \textcolor{keywordflow}{if}\ (userInput\ ==\ \textcolor{charliteral}{'\#'})\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00189}00189\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Bitte\ Card"{}},\ \textcolor{stringliteral}{"{}dranhalten"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00191}00191\ \ \ \ \ \ \ id1\ =\ \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{readNFC}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00193}00193\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00194}00194\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00195}00195\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{names}}[id1]);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00196}00196\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00197}00197\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}erkannt"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00198}00198\ \ \ \ \ \ \ delay(\mbox{\hyperlink{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}{DEFAULT\_DELAY}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00200}00200\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00201}00201\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00202}00202\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(String(\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[id1])\ +\ \textcolor{stringliteral}{"{}\ Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00203}00203\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00204}00204\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(\textcolor{stringliteral}{"{}auf\ dem\ Konto"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00205}00205\ \ \ \ \ \ \ delay(2000);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00207}00207\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00208}00208\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00209}00209\ \ \ \ \ \textcolor{keywordflow}{if}\ (userInput\ ==\ \textcolor{charliteral}{'A'})\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00210}00210\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Bitte\ Card"{}},\ \textcolor{stringliteral}{"{}dranhalten"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00211}00211\ \ \ \ \ \ \ id1\ =\ \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{readNFC}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00213}00213\ \ \ \ \ \ \ transactionSuccess\ =\ \mbox{\hyperlink{nfc_8c_a25041a1f318b71cddf8da6e65260b343}{transaction}}(\mbox{\hyperlink{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}{bankID}},\ id1,\ 4000);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00215}00215\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!transactionSuccess)\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}Nicht\ genug\ C"{}},\ \textcolor{stringliteral}{"{}in\ der\ Bank"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00216}00216\ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{stringliteral}{"{}4000\ Credits"{}},\ \textcolor{stringliteral}{"{}ueberwiesen"{}},\ 2000);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00217}00217\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00218}00218\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00219}00219\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00220}00220\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00221}00221\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00222}00222\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00234}\mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{00234}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\_print}}(\textcolor{keywordtype}{char}\ text1[],\ \textcolor{keywordtype}{char}\ text2[],\ uint16\_t\ timeout\ =\ 1000)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00235}00235\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.clear();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00236}00236\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 0);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00237}00237\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(text1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00238}00238\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00239}00239\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(text2);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00240}00240\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00241}00241\ \ \ \textcolor{keywordflow}{if}\ (timeout\ >\ 0)\ delay(timeout);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00242}00242\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00243}00243\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00244}00244\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00245}00245\ \textcolor{comment}{\ \ Function:\ readNFC}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00246}00246\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00247}00247\ \textcolor{comment}{\ \ Waits\ for\ a\ properly\ formated\ NFC-\/Tag\ to\ be\ scanned\ and\ returns\ the\ conatining\ ID}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00248}00248\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00249}00249\ \textcolor{comment}{\ \ returns:\ ID\ stored\ on\ card}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00250}00250\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00251}00251\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00252}\mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{00252}}\ uint8\_t\ \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{readNFC}}()\ \{\ \ \textcolor{comment}{//\ Beginne\ Loop-\/Funktion}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00253}00253\ \ \ uint8\_t\ success;\ \ \ \textcolor{comment}{//\ Variable\ anlegen}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00254}00254\ \ \ uint8\_t\ uid[8];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00255}00255\ \ \ uint8\_t\ uidLength;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00256}00256\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00257}00257\ \ \ uint8\_t\ complete;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00258}00258\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00259}00259\ \ \ \textcolor{keywordflow}{while}\ (!complete)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00260}00260\ \ \ \ \ success\ =\ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}.readPassiveTargetID(PN532\_MIFARE\_ISO14443A,\ uid,\ \&uidLength);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00262}00262\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00263}00263\ \ \ \ \ \textcolor{keywordflow}{if}\ (success)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00264}00264\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (uidLength\ ==\ 7)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00265}00265\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00266}00266\ \ \ \ \ \ \ \ \ uint8\_t\ data[32];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00267}00267\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00268}00268\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}}.ntag2xx\_ReadPage(6,\ data);\ \ \textcolor{comment}{//\ Read\ block\ 6\ -\/\ the\ first\ user\ writable\ block}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00269}00269\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00270}00270\ \ \ \ \ \ \ \ \ uint8\_t\ first\ =\ (char)data[0]\ -\/\ \textcolor{charliteral}{'0'};\ \ \textcolor{comment}{//\ Converts\ the\ first\ 2\ HEX\ bits\ to\ char\ and\ subtracts\ '0'\ to\ get\ the\ int\ value}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00271}00271\ \ \ \ \ \ \ \ \ uint8\_t\ second\ =\ (char)data[1]\ -\/\ \textcolor{charliteral}{'0'};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00272}00272\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00273}00273\ \ \ \ \ \ \ \ \ uint8\_t\ complete\ =\ (first\ *\ 10)\ +\ second;\ \ \textcolor{comment}{//concats\ two\ ints}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00274}00274\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00275}00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ i\ =\ 0;\ i\ <\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}{validIDs}});\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ Serial.println(String(i));\ \ \ \ \textcolor{comment}{//\ !!do\ not\ remove,\ program\ doesn't\ work\ without\ it\ for\ some\ reason!!}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}{validIDs}}[i]\ ==\ complete)\ \textcolor{keywordflow}{return}\ complete;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00278}00278\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00279}00279\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00280}00280\ \ \ \ \ \ \ \ \ complete\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00281}00281\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00282}00282\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00283}00283\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00284}00284\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00285}00285\ \ \ \textcolor{keywordflow}{return}\ complete;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00286}00286\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00287}00287\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00288}00288\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00289}00289\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00290}00290\ \textcolor{comment}{\ \ Function:\ getKeypadInput}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00291}00291\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00292}00292\ \textcolor{comment}{\ \ Waits\ for\ a\ input\ on\ the\ keyboard}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00293}00293\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00294}00294\ \textcolor{comment}{\ \ returns:\ valid\ char\ pressed\ on\ keypad}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00295}00295\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00296}00296\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00297}\mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{00297}}\ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{getKeypadInput}}()\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00298}00298\ \ \ \textcolor{keywordtype}{char}\ keyInput;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00299}00299\ \ \ uint8\_t\ validKey\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00300}00300\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00301}00301\ \ \ \textcolor{keywordflow}{while}\ (!validKey)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00302}00302\ \ \ \ \ keyInput\ =\ \mbox{\hyperlink{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}{keypad}}.getKey();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00303}00303\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00304}00304\ \ \ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ i\ =\ 0;\ i\ <\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}{validChars}});\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00305}00305\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (keyInput\ ==\ \mbox{\hyperlink{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}{validChars}}[i])\ validKey\ =\ 1;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00306}00306\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00307}00307\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00308}00308\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00309}00309\ \ \ \textcolor{keywordflow}{return}\ keyInput;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00310}00310\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00311}00311\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00312}00312\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00313}00313\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00314}00314\ \textcolor{comment}{\ \ Function:\ transaction}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00315}00315\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00316}00316\ \textcolor{comment}{\ \ Subtracts\ amount\ from\ sender\ and\ adds\ amount\ to\ receiver}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00317}00317\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00318}00318\ \textcolor{comment}{\ \ sender:\ id\ from\ player\ who\ wants\ to\ send\ money}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00319}00319\ \textcolor{comment}{\ \ receiver:\ id\ from\ player\ who\ receives\ the\ money}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00320}00320\ \textcolor{comment}{\ \ amount:\ how\ much\ money\ to\ send}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00321}00321\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00322}00322\ \textcolor{comment}{\ \ returns:\ if\ transaction\ was\ successful}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00323}00323\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00324}00324\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00325}00325\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00326}\mbox{\hyperlink{nfc_8c_a25041a1f318b71cddf8da6e65260b343}{00326}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{nfc_8c_a25041a1f318b71cddf8da6e65260b343}{transaction}}(uint8\_t\ sender,\ uint8\_t\ receiver,\ uint32\_t\ amount)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00327}00327\ \ \ uint32\_t\ senderCredits\ =\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[sender];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00328}00328\ \ \ uint32\_t\ receiverCredits\ =\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[receiver];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00329}00329\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00330}00330\ \ \ \textcolor{keywordflow}{if}\ (senderCredits\ <\ amount)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00331}00331\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00332}00332\ \ \ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[sender]\ =\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[sender]\ -\/\ amount;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00333}00333\ \ \ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[receiver]\ =\ \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[receiver]\ +\ amount;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00334}00334\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00335}00335\ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00336}00336\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00337}00337\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00338}00338\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00339}00339\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00340}00340\ \textcolor{comment}{\ \ Function:\ cashInput}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00341}00341\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00342}00342\ \textcolor{comment}{\ \ Concats\ chars\ pressed\ on\ Keypad\ and\ convertst\ them\ to\ int}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00343}00343\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00344}00344\ \textcolor{comment}{\ \ returns:\ int\ value\ of\ number\ char\ array}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00345}00345\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00346}00346\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00347}\mbox{\hyperlink{nfc_8c_adca3813c15127121e34f92ea2682930f}{00347}}\ uint32\_t\ \mbox{\hyperlink{nfc_8c_adca3813c15127121e34f92ea2682930f}{cashinput}}()\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00348}00348\ \ \ \textcolor{keywordtype}{char}\ input[6];}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00349}00349\ \ \ uint32\_t\ total\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00350}00350\ \ \ uint8\_t\ digitCount\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00351}00351\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00352}00352\ \ \ \textcolor{keywordtype}{char}\ key;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00353}00353\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00354}00354\ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.setCursor(0,\ 1);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00355}00355\ \ \ \textcolor{keywordflow}{while}\ (1)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00356}00356\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00357}00357\ \ \ \ \ key\ =\ \mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{getKeypadInput}}();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00358}00358\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00359}00359\ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{charliteral}{'\#'})\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00360}00360\ \ \ \ \ \textcolor{keywordflow}{if}\ (digitCount\ >=\ 6)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00361}00361\ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{charliteral}{'A'}\ |\ key\ ==\ \textcolor{charliteral}{'B'}\ |\ key\ ==\ \textcolor{charliteral}{'C'})\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00362}00362\ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{charliteral}{'*'})\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00363}00363\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00364}00364\ \ \ \ \ \textcolor{comment}{//\ input[digitCount]\ =\ ((int)(char)key\ -\/\ '0');}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00365}00365\ \ \ \ \ input[digitCount]\ =\ key;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00366}00366\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00367}00367\ \ \ \ \ total\ =\ String(input).toInt();}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00368}00368\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00369}00369\ \ \ \ \ digitCount++;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00370}00370\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00371}00371\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00372}00372\ \ \ \ \ \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}}.print(key);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00373}00373\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00374}00374\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00375}00375\ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(total);}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00376}00376\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00377}00377\ \ \ \textcolor{keywordflow}{return}\ total;}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00378}00378\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00379}00379\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00380}00380\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00381}00381\ \textcolor{preprocessor}{\#ifdef\ DEBUG}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00382}00382\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00383}00383\ \textcolor{comment}{\ \ debugPrintBank}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00384}00384\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00385}00385\ \textcolor{comment}{\ \ Prints\ the\ content\ of\ the\ bank\ array}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00386}00386\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00387}00387\ }
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00388}\mbox{\hyperlink{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}{00388}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}{debugPrintBank}}()\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00389}00389\ \ \ \textcolor{keywordflow}{for}\ (uint8\_t\ i\ =\ 3;\ i\ <\ \mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{playerCount}};\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00390}00390\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ ==\ 3)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00391}00391\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}Bank\ has\ "{}}\ +\ String(\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i])\ +\ \textcolor{stringliteral}{"{}\ Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00392}00392\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00393}00393\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00394}00394\ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ ==\ 4)\ \{}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00395}00395\ \ \ \ \ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}Parking\ has\ "{}}\ +\ String(\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i])\ +\ \textcolor{stringliteral}{"{}\ Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00396}00396\ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00397}00397\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00398}00398\ \ \ \ \ \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\_PRINTLN}}(\textcolor{stringliteral}{"{}Player\ "{}}\ +\ String(i)\ +\ \textcolor{stringliteral}{"{}\ has\ "{}}\ +\ String(\mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}}[i])\ +\ \textcolor{stringliteral}{"{}\ Credits"{}});}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00399}00399\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00400}00400\ \}}
+\DoxyCodeLine{\Hypertarget{nfc_8c_source_l00401}00401\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

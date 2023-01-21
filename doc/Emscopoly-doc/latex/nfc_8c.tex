@@ -1,0 +1,410 @@
+\hypertarget{nfc_8c}{}\doxysection{C\+:/\+Users/\+For\+Za/source/repos/\+Monopoly-\/\+Banking/doc/nfc.c File Reference}
+\label{nfc_8c}\index{C:/Users/ForZa/source/repos/Monopoly-\/Banking/doc/nfc.c@{C:/Users/ForZa/source/repos/Monopoly-\/Banking/doc/nfc.c}}
+{\ttfamily \#include $<$Wire.\+h$>$}\newline
+{\ttfamily \#include $<$SPI.\+h$>$}\newline
+{\ttfamily \#include $<$Adafruit\+\_\+\+PN532.\+h$>$}\newline
+{\ttfamily \#include $<$Liquid\+Crystal\+\_\+\+I2\+C.\+h$>$}\newline
+{\ttfamily \#include $<$Keypad.\+h$>$}\newline
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{nfc_8c_ad72dbcf6d0153db1b8d8a58001feed83}{DEBUG}}~1
+\item 
+\#define \mbox{\hyperlink{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}{DEBUG\+\_\+\+PRINT}}(x)~Serial.\+print(x)
+\item 
+\#define \mbox{\hyperlink{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}{DEBUG\+\_\+\+PRINTLN}}(x)~Serial.\+println(x)
+\item 
+\#define \mbox{\hyperlink{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}{DEFAULT\+\_\+\+DELAY}}~1500
+\item 
+\#define \mbox{\hyperlink{nfc_8c_ae64dee1e0606f4013ca452378ccdcb6a}{WELCOME\+\_\+\+TEXT1}}~\char`\"{}Willkommen zu\char`\"{}
+\item 
+\#define \mbox{\hyperlink{nfc_8c_ae694182bf59e2930d63507e8269b23e1}{WELCOME\+\_\+\+TEXT2}}~\char`\"{}Emscopoly!\char`\"{}
+\item 
+\#define \mbox{\hyperlink{nfc_8c_ac1b2359f1edcdae41671e5536f6b9116}{WAIT\+\_\+\+INPUT\+\_\+\+TEXT1}}~\char`\"{}$\ast$ -\/ Transaktion\char`\"{}
+\item 
+\#define \mbox{\hyperlink{nfc_8c_a5f92f14951429b8655a6a6cd085a98cb}{WAIT\+\_\+\+INPUT\+\_\+\+TEXT2}}~\char`\"{}\# -\/ Kontostand\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}{lcd\+\_\+print}} (char text1\mbox{[}$\,$\mbox{]}, char text2\mbox{[}$\,$\mbox{]}, uint16\+\_\+t timeout=1000)
+\begin{DoxyCompactList}\small\item\em Displays 2 Strings on the LCD with optional timeout. \end{DoxyCompactList}\item 
+Adafruit\+\_\+\+PN532 \mbox{\hyperlink{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}{nfc}} (\mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{PN532\+\_\+\+SCK}}, \mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{PN532\+\_\+\+MISO}}, \mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{PN532\+\_\+\+MOSI}}, \mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{PN532\+\_\+\+SS}})
+\item 
+Liquid\+Crystal\+\_\+\+I2C \mbox{\hyperlink{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}{lcd}} (0x27, 16, 2)
+\item 
+void \mbox{\hyperlink{nfc_8c_a4fc01d736fe50cf5b977f755b675f11d}{setup}} ()
+\begin{DoxyCompactList}\small\item\em One time set up of variables and objects. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{nfc_8c_afe461d27b9c48d5921c00d521181f12f}{loop}} ()
+\begin{DoxyCompactList}\small\item\em Main loop function used by Arduino. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{nfc_8c_a14a54075c5bd5628493828276bd987bc}{read\+NFC}} ()
+\begin{DoxyCompactList}\small\item\em Waits for a properly formated NFC-\/\+Tag to be scanned and returns the conatining ID. \end{DoxyCompactList}\item 
+char \mbox{\hyperlink{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}{get\+Keypad\+Input}} ()
+\begin{DoxyCompactList}\small\item\em Waits for a input on the keyboard. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{nfc_8c_a25041a1f318b71cddf8da6e65260b343}{transaction}} (uint8\+\_\+t sender, uint8\+\_\+t receiver, uint32\+\_\+t amount)
+\begin{DoxyCompactList}\small\item\em Subtracts amount from sender and adds amount to receiver. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{nfc_8c_adca3813c15127121e34f92ea2682930f}{cashinput}} ()
+\begin{DoxyCompactList}\small\item\em Concats chars pressed on Keypad and converts them to int. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}{debug\+Print\+Bank}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const byte \mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{PN532\+\_\+\+SCK}} = 2
+\item 
+const byte \mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{PN532\+\_\+\+MOSI}} = 3
+\item 
+const byte \mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{PN532\+\_\+\+SS}} = 4
+\item 
+const byte \mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{PN532\+\_\+\+MISO}} = 5
+\item 
+const byte \mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}} = 4
+\item 
+const byte \mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}} = 4
+\item 
+const byte \mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{COL\+\_\+\+PINS}} \mbox{[}$\,$\mbox{]} = \{ 6, 7, 8, 9 \}
+\item 
+const byte \mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{ROW\+\_\+\+PINS}} \mbox{[}$\,$\mbox{]} = \{ 10, 11, 12, 13 \}
+\item 
+const char \mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{KEYS}} \mbox{[}\mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}\mbox{]}\mbox{[}\mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}}\mbox{]}
+\item 
+const char \mbox{\hyperlink{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}{valid\+Chars}} \mbox{[}$\,$\mbox{]} = \{ \textquotesingle{}1\textquotesingle{}, \textquotesingle{}2\textquotesingle{}, \textquotesingle{}3\textquotesingle{}, \textquotesingle{}A\textquotesingle{}, \textquotesingle{}4\textquotesingle{}, \textquotesingle{}5\textquotesingle{}, \textquotesingle{}6\textquotesingle{}, \textquotesingle{}B\textquotesingle{}, \textquotesingle{}7\textquotesingle{}, \textquotesingle{}8\textquotesingle{}, \textquotesingle{}9\textquotesingle{}, \textquotesingle{}C\textquotesingle{}, \textquotesingle{}$\ast$\textquotesingle{}, \textquotesingle{}0\textquotesingle{}, \textquotesingle{}\#\textquotesingle{}, \textquotesingle{}D\textquotesingle{} \}
+\item 
+Keypad \mbox{\hyperlink{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}{keypad}} = Keypad(make\+Keymap(\mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{KEYS}}), \mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{ROW\+\_\+\+PINS}}, \mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{COL\+\_\+\+PINS}}, \mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}, \mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}})
+\item 
+const uint8\+\_\+t \mbox{\hyperlink{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}{valid\+IDs}} \mbox{[}$\,$\mbox{]} = \{ 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 \}
+\item 
+const uint8\+\_\+t \mbox{\hyperlink{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}{player\+Count}} = 12
+\item 
+const uint8\+\_\+t \mbox{\hyperlink{nfc_8c_a763f0e01a6efa2ab6f875689d19920c6}{first\+Valid\+Player\+ID}} = 5
+\item 
+const uint8\+\_\+t \mbox{\hyperlink{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}{bank\+ID}} = 3
+\item 
+const uint8\+\_\+t \mbox{\hyperlink{nfc_8c_a21e3e966d47c93aa7e72c0b455dc1fe3}{parking\+ID}} = 4
+\item 
+const uint32\+\_\+t \mbox{\hyperlink{nfc_8c_a48b4374e957b25684025bd89a5cebe96}{default\+Money}} = 30000
+\item 
+const uint32\+\_\+t \mbox{\hyperlink{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}{default\+Money\+Bank}} = 600000
+\item 
+uint32\+\_\+t \mbox{\hyperlink{nfc_8c_a1f61c1cd930f25684e32117c31370191}{bank}} \mbox{[}13\mbox{]}
+\item 
+const char \mbox{\hyperlink{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}{names}} \mbox{[}$\,$\mbox{]}\mbox{[}16\mbox{]} = \{ \char`\"{}\char`\"{}, \char`\"{}\char`\"{}, \char`\"{}\char`\"{}, \char`\"{}Stonks\char`\"{}, \char`\"{}Parken\char`\"{}, \char`\"{}Buegel\+Eisen\char`\"{}, \char`\"{}Nike\+Air\+Max\char`\"{}, \char`\"{}Aida\char`\"{}, \char`\"{}Korken\char`\"{}, \char`\"{}Zylinder\char`\"{}, \char`\"{}Excavator\char`\"{}, \char`\"{}La Tortuga\char`\"{}, \char`\"{}Big D\char`\"{} \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{nfc_8c_ad72dbcf6d0153db1b8d8a58001feed83}\label{nfc_8c_ad72dbcf6d0153db1b8d8a58001feed83}} 
+\index{nfc.c@{nfc.c}!DEBUG@{DEBUG}}
+\index{DEBUG@{DEBUG}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{DEBUG}{DEBUG}}
+{\footnotesize\ttfamily \#define DEBUG~1}
+
+If debug mode is to be used \mbox{\Hypertarget{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}\label{nfc_8c_af6551f0b4c3964c3128f808e7bf987c7}} 
+\index{nfc.c@{nfc.c}!DEBUG\_PRINT@{DEBUG\_PRINT}}
+\index{DEBUG\_PRINT@{DEBUG\_PRINT}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{DEBUG\_PRINT}{DEBUG\_PRINT}}
+{\footnotesize\ttfamily \#define DEBUG\+\_\+\+PRINT(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~Serial.\+print(x)}
+
+Redefines Serial.\+print(x) as DEBUG\+\_\+\+PRINT so it only outputs to the serial monitor, if DEBUG is defined \mbox{\Hypertarget{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}\label{nfc_8c_a8e30ff0704664fcb13dabf0c4dc5c8f5}} 
+\index{nfc.c@{nfc.c}!DEBUG\_PRINTLN@{DEBUG\_PRINTLN}}
+\index{DEBUG\_PRINTLN@{DEBUG\_PRINTLN}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{DEBUG\_PRINTLN}{DEBUG\_PRINTLN}}
+{\footnotesize\ttfamily \#define DEBUG\+\_\+\+PRINTLN(\begin{DoxyParamCaption}\item[{}]{x }\end{DoxyParamCaption})~Serial.\+println(x)}
+
+Redefines Serial.\+println(x) as DEBUG\+\_\+\+PRINTLN so it only outputs to the serial monitor, if DEBUG is defined \mbox{\Hypertarget{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}\label{nfc_8c_a3a22cd54ef97b948bcce8b681c7ef95f}} 
+\index{nfc.c@{nfc.c}!DEFAULT\_DELAY@{DEFAULT\_DELAY}}
+\index{DEFAULT\_DELAY@{DEFAULT\_DELAY}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{DEFAULT\_DELAY}{DEFAULT\_DELAY}}
+{\footnotesize\ttfamily \#define DEFAULT\+\_\+\+DELAY~1500}
+
+Default delay used in the lcd\+\_\+print function \mbox{\Hypertarget{nfc_8c_ac1b2359f1edcdae41671e5536f6b9116}\label{nfc_8c_ac1b2359f1edcdae41671e5536f6b9116}} 
+\index{nfc.c@{nfc.c}!WAIT\_INPUT\_TEXT1@{WAIT\_INPUT\_TEXT1}}
+\index{WAIT\_INPUT\_TEXT1@{WAIT\_INPUT\_TEXT1}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{WAIT\_INPUT\_TEXT1}{WAIT\_INPUT\_TEXT1}}
+{\footnotesize\ttfamily \#define WAIT\+\_\+\+INPUT\+\_\+\+TEXT1~\char`\"{}$\ast$ -\/ Transaktion\char`\"{}}
+
+\mbox{\Hypertarget{nfc_8c_a5f92f14951429b8655a6a6cd085a98cb}\label{nfc_8c_a5f92f14951429b8655a6a6cd085a98cb}} 
+\index{nfc.c@{nfc.c}!WAIT\_INPUT\_TEXT2@{WAIT\_INPUT\_TEXT2}}
+\index{WAIT\_INPUT\_TEXT2@{WAIT\_INPUT\_TEXT2}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{WAIT\_INPUT\_TEXT2}{WAIT\_INPUT\_TEXT2}}
+{\footnotesize\ttfamily \#define WAIT\+\_\+\+INPUT\+\_\+\+TEXT2~\char`\"{}\# -\/ Kontostand\char`\"{}}
+
+\mbox{\Hypertarget{nfc_8c_ae64dee1e0606f4013ca452378ccdcb6a}\label{nfc_8c_ae64dee1e0606f4013ca452378ccdcb6a}} 
+\index{nfc.c@{nfc.c}!WELCOME\_TEXT1@{WELCOME\_TEXT1}}
+\index{WELCOME\_TEXT1@{WELCOME\_TEXT1}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{WELCOME\_TEXT1}{WELCOME\_TEXT1}}
+{\footnotesize\ttfamily \#define WELCOME\+\_\+\+TEXT1~\char`\"{}Willkommen zu\char`\"{}}
+
+\mbox{\Hypertarget{nfc_8c_ae694182bf59e2930d63507e8269b23e1}\label{nfc_8c_ae694182bf59e2930d63507e8269b23e1}} 
+\index{nfc.c@{nfc.c}!WELCOME\_TEXT2@{WELCOME\_TEXT2}}
+\index{WELCOME\_TEXT2@{WELCOME\_TEXT2}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{WELCOME\_TEXT2}{WELCOME\_TEXT2}}
+{\footnotesize\ttfamily \#define WELCOME\+\_\+\+TEXT2~\char`\"{}Emscopoly!\char`\"{}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{nfc_8c_adca3813c15127121e34f92ea2682930f}\label{nfc_8c_adca3813c15127121e34f92ea2682930f}} 
+\index{nfc.c@{nfc.c}!cashinput@{cashinput}}
+\index{cashinput@{cashinput}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{cashinput()}{cashinput()}}
+{\footnotesize\ttfamily uint32\+\_\+t cashinput (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Concats chars pressed on Keypad and converts them to int. 
+
+Stores the last keypresses in an array, displays the keypresses on the LCD and converts it to an int.
+
+\begin{DoxyReturn}{Returns}
+\+: int value of number char array 
+\end{DoxyReturn}
+\mbox{\Hypertarget{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}\label{nfc_8c_a73f4fac9d9612dde93ddef9451d1fb29}} 
+\index{nfc.c@{nfc.c}!debugPrintBank@{debugPrintBank}}
+\index{debugPrintBank@{debugPrintBank}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{debugPrintBank()}{debugPrintBank()}}
+{\footnotesize\ttfamily void debug\+Print\+Bank (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+This only runs if the DEBUG macro is set
+
+Prints the content of the bank array \mbox{\Hypertarget{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}\label{nfc_8c_a64f49fabd6ad8fa8b7a65ba6f65dd9a4}} 
+\index{nfc.c@{nfc.c}!getKeypadInput@{getKeypadInput}}
+\index{getKeypadInput@{getKeypadInput}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{getKeypadInput()}{getKeypadInput()}}
+{\footnotesize\ttfamily char get\+Keypad\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Waits for a input on the keyboard. 
+
+If no valid key or no keypress is pressed, it waits until one is pressed.
+
+\begin{DoxyReturn}{Returns}
+A valid char pressed on keypad 
+\end{DoxyReturn}
+\mbox{\Hypertarget{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}\label{nfc_8c_ae084e1bc8ccb35ea289ba0ca4972ea6d}} 
+\index{nfc.c@{nfc.c}!lcd@{lcd}}
+\index{lcd@{lcd}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{lcd()}{lcd()}}
+{\footnotesize\ttfamily Liquid\+Crystal\+\_\+\+I2C lcd (\begin{DoxyParamCaption}\item[{0x27}]{,  }\item[{16}]{,  }\item[{2}]{ }\end{DoxyParamCaption})}
+
+Instanz erzeugen für LCD \mbox{\Hypertarget{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}\label{nfc_8c_abd034dc52fa4469f25f3c3da82617e9e}} 
+\index{nfc.c@{nfc.c}!lcd\_print@{lcd\_print}}
+\index{lcd\_print@{lcd\_print}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{lcd\_print()}{lcd\_print()}}
+{\footnotesize\ttfamily void lcd\+\_\+print (\begin{DoxyParamCaption}\item[{char}]{text1\mbox{[}$\,$\mbox{]},  }\item[{char}]{text2\mbox{[}$\,$\mbox{]},  }\item[{uint16\+\_\+t}]{timeout = {\ttfamily 1000} }\end{DoxyParamCaption})}
+
+
+
+Displays 2 Strings on the LCD with optional timeout. 
+
+Displays the first parameter on the first line, and the second parameter at the second line. Optionally waits before returning.
+
+
+\begin{DoxyParams}{Parameters}
+{\em text1\mbox{[}$\,$\mbox{]}} & Char array / srting to display on line 1 \\
+\hline
+{\em text2\mbox{[}$\,$\mbox{]}} & Char array / srting to display on line 2 \\
+\hline
+{\em timeout(optional)} & How many miliseconds to display the text \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{nfc_8c_afe461d27b9c48d5921c00d521181f12f}\label{nfc_8c_afe461d27b9c48d5921c00d521181f12f}} 
+\index{nfc.c@{nfc.c}!loop@{loop}}
+\index{loop@{loop}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{loop()}{loop()}}
+{\footnotesize\ttfamily void loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Main loop function used by Arduino. 
+
+This function runs indefinitely \mbox{\Hypertarget{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}\label{nfc_8c_a677e2132f2f9bbc9f391e9caa51aeee8}} 
+\index{nfc.c@{nfc.c}!nfc@{nfc}}
+\index{nfc@{nfc}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{nfc()}{nfc()}}
+{\footnotesize\ttfamily Adafruit\+\_\+\+PN532 nfc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}{PN532\+\_\+\+SCK}}}]{,  }\item[{\mbox{\hyperlink{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}{PN532\+\_\+\+MISO}}}]{,  }\item[{\mbox{\hyperlink{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}{PN532\+\_\+\+MOSI}}}]{,  }\item[{\mbox{\hyperlink{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}{PN532\+\_\+\+SS}}}]{ }\end{DoxyParamCaption})}
+
+Instanz erzeugen mit SPI Protokoll \mbox{\Hypertarget{nfc_8c_a14a54075c5bd5628493828276bd987bc}\label{nfc_8c_a14a54075c5bd5628493828276bd987bc}} 
+\index{nfc.c@{nfc.c}!readNFC@{readNFC}}
+\index{readNFC@{readNFC}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{readNFC()}{readNFC()}}
+{\footnotesize\ttfamily uint8\+\_\+t read\+NFC (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Waits for a properly formated NFC-\/\+Tag to be scanned and returns the conatining ID. 
+
+As long as the NFC reader has not detected a valid card, it keeps rescanning for cards. If it has scanned a card, it tests if it contains a valid ID.
+
+\begin{DoxyReturn}{Returns}
+ID stored on card 
+\end{DoxyReturn}
+\mbox{\Hypertarget{nfc_8c_a4fc01d736fe50cf5b977f755b675f11d}\label{nfc_8c_a4fc01d736fe50cf5b977f755b675f11d}} 
+\index{nfc.c@{nfc.c}!setup@{setup}}
+\index{setup@{setup}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{setup()}{setup()}}
+{\footnotesize\ttfamily void setup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+One time set up of variables and objects. 
+
+This function is called right after the Arduino boots up \mbox{\Hypertarget{nfc_8c_a25041a1f318b71cddf8da6e65260b343}\label{nfc_8c_a25041a1f318b71cddf8da6e65260b343}} 
+\index{nfc.c@{nfc.c}!transaction@{transaction}}
+\index{transaction@{transaction}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{transaction()}{transaction()}}
+{\footnotesize\ttfamily bool transaction (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sender,  }\item[{uint8\+\_\+t}]{receiver,  }\item[{uint32\+\_\+t}]{amount }\end{DoxyParamCaption})}
+
+
+
+Subtracts amount from sender and adds amount to receiver. 
+
+This function first checks, if the sender has enough money in the bank. If there is enough money, subtracts the amount to send from sender, and adds it to the receiver.
+
+
+\begin{DoxyParams}{Parameters}
+{\em sender} & Id from player who wants to send money \\
+\hline
+{\em receiver} & Id from player who receives the money \\
+\hline
+{\em amount} & How much money to send\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool If transaction was successful 
+\end{DoxyReturn}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{nfc_8c_a1f61c1cd930f25684e32117c31370191}\label{nfc_8c_a1f61c1cd930f25684e32117c31370191}} 
+\index{nfc.c@{nfc.c}!bank@{bank}}
+\index{bank@{bank}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{bank}{bank}}
+{\footnotesize\ttfamily uint32\+\_\+t bank\mbox{[}13\mbox{]}}
+
+Int array where bank balance is stored \mbox{\Hypertarget{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}\label{nfc_8c_abf05da22c470bf8a98eae3ce0443a43e}} 
+\index{nfc.c@{nfc.c}!bankID@{bankID}}
+\index{bankID@{bankID}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{bankID}{bankID}}
+{\footnotesize\ttfamily const uint8\+\_\+t bank\+ID = 3}
+
+ID of bank \mbox{\Hypertarget{nfc_8c_a133180363a44f0869100974ef50efca6}\label{nfc_8c_a133180363a44f0869100974ef50efca6}} 
+\index{nfc.c@{nfc.c}!COL@{COL}}
+\index{COL@{COL}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{COL}{COL}}
+{\footnotesize\ttfamily const byte COL = 4}
+
+Number of columns on the keypad \mbox{\Hypertarget{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}\label{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}} 
+\index{nfc.c@{nfc.c}!COL\_PINS@{COL\_PINS}}
+\index{COL\_PINS@{COL\_PINS}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{COL\_PINS}{COL\_PINS}}
+{\footnotesize\ttfamily const byte COL\+\_\+\+PINS\mbox{[}$\,$\mbox{]} = \{ 6, 7, 8, 9 \}}
+
+Which pins are used as columns \mbox{\Hypertarget{nfc_8c_a48b4374e957b25684025bd89a5cebe96}\label{nfc_8c_a48b4374e957b25684025bd89a5cebe96}} 
+\index{nfc.c@{nfc.c}!defaultMoney@{defaultMoney}}
+\index{defaultMoney@{defaultMoney}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{defaultMoney}{defaultMoney}}
+{\footnotesize\ttfamily const uint32\+\_\+t default\+Money = 30000}
+
+Starting credits for players \mbox{\Hypertarget{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}\label{nfc_8c_a3fa27029ddbde2bde1d47a2204aa20d1}} 
+\index{nfc.c@{nfc.c}!defaultMoneyBank@{defaultMoneyBank}}
+\index{defaultMoneyBank@{defaultMoneyBank}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{defaultMoneyBank}{defaultMoneyBank}}
+{\footnotesize\ttfamily const uint32\+\_\+t default\+Money\+Bank = 600000}
+
+Starting credits for bank \mbox{\Hypertarget{nfc_8c_a763f0e01a6efa2ab6f875689d19920c6}\label{nfc_8c_a763f0e01a6efa2ab6f875689d19920c6}} 
+\index{nfc.c@{nfc.c}!firstValidPlayerID@{firstValidPlayerID}}
+\index{firstValidPlayerID@{firstValidPlayerID}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{firstValidPlayerID}{firstValidPlayerID}}
+{\footnotesize\ttfamily const uint8\+\_\+t first\+Valid\+Player\+ID = 5}
+
+First valid ID for player \mbox{\Hypertarget{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}\label{nfc_8c_a0e6c3cc7e8c762ab0ca1fa2296d7bbfe}} 
+\index{nfc.c@{nfc.c}!keypad@{keypad}}
+\index{keypad@{keypad}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{keypad}{keypad}}
+{\footnotesize\ttfamily Keypad keypad = Keypad(make\+Keymap(\mbox{\hyperlink{nfc_8c_a6380b6d1755851589d9249a00ed752e4}{KEYS}}), \mbox{\hyperlink{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}{ROW\+\_\+\+PINS}}, \mbox{\hyperlink{nfc_8c_a61dcce1c9376077eda6b874a0a8b6d0d}{COL\+\_\+\+PINS}}, \mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}, \mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}})}
+
+Keypad instance \mbox{\Hypertarget{nfc_8c_a6380b6d1755851589d9249a00ed752e4}\label{nfc_8c_a6380b6d1755851589d9249a00ed752e4}} 
+\index{nfc.c@{nfc.c}!KEYS@{KEYS}}
+\index{KEYS@{KEYS}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{KEYS}{KEYS}}
+{\footnotesize\ttfamily const char KEYS\mbox{[}\mbox{\hyperlink{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}{ROW}}\mbox{]}\mbox{[}\mbox{\hyperlink{nfc_8c_a133180363a44f0869100974ef50efca6}{COL}}\mbox{]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=\ \{}
+\DoxyCodeLine{\ \ \{\ \textcolor{charliteral}{'D'},\ \textcolor{charliteral}{'\#'},\ \textcolor{charliteral}{'0'},\ \textcolor{charliteral}{'*'}\ \},}
+\DoxyCodeLine{\ \ \{\ \textcolor{charliteral}{'C'},\ \textcolor{charliteral}{'9'},\ \textcolor{charliteral}{'8'},\ \textcolor{charliteral}{'7'}\ \},}
+\DoxyCodeLine{\ \ \{\ \textcolor{charliteral}{'B'},\ \textcolor{charliteral}{'6'},\ \textcolor{charliteral}{'5'},\ \textcolor{charliteral}{'4'}\ \},}
+\DoxyCodeLine{\ \ \{\ \textcolor{charliteral}{'A'},\ \textcolor{charliteral}{'3'},\ \textcolor{charliteral}{'2'},\ \textcolor{charliteral}{'1'}\ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+What each button represents on the keypad \mbox{\Hypertarget{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}\label{nfc_8c_aed35717d5d67ce8b17a67fb88286b511}} 
+\index{nfc.c@{nfc.c}!names@{names}}
+\index{names@{names}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{names}{names}}
+{\footnotesize\ttfamily const char names\mbox{[}$\,$\mbox{]}\mbox{[}16\mbox{]} = \{ \char`\"{}\char`\"{}, \char`\"{}\char`\"{}, \char`\"{}\char`\"{}, \char`\"{}Stonks\char`\"{}, \char`\"{}Parken\char`\"{}, \char`\"{}Buegel\+Eisen\char`\"{}, \char`\"{}Nike\+Air\+Max\char`\"{}, \char`\"{}Aida\char`\"{}, \char`\"{}Korken\char`\"{}, \char`\"{}Zylinder\char`\"{}, \char`\"{}Excavator\char`\"{}, \char`\"{}La Tortuga\char`\"{}, \char`\"{}Big D\char`\"{} \}}
+
+Array of names for the players \mbox{\Hypertarget{nfc_8c_a21e3e966d47c93aa7e72c0b455dc1fe3}\label{nfc_8c_a21e3e966d47c93aa7e72c0b455dc1fe3}} 
+\index{nfc.c@{nfc.c}!parkingID@{parkingID}}
+\index{parkingID@{parkingID}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{parkingID}{parkingID}}
+{\footnotesize\ttfamily const uint8\+\_\+t parking\+ID = 4}
+
+ID for free parking \mbox{\Hypertarget{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}\label{nfc_8c_afb6c1649766bf57f316fb529c82bfcba}} 
+\index{nfc.c@{nfc.c}!playerCount@{playerCount}}
+\index{playerCount@{playerCount}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{playerCount}{playerCount}}
+{\footnotesize\ttfamily const uint8\+\_\+t player\+Count = 12}
+
+Amount of cards \mbox{\Hypertarget{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}\label{nfc_8c_ab94df24c85fe29503d6ea45e584780f8}} 
+\index{nfc.c@{nfc.c}!PN532\_MISO@{PN532\_MISO}}
+\index{PN532\_MISO@{PN532\_MISO}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{PN532\_MISO}{PN532\_MISO}}
+{\footnotesize\ttfamily const byte PN532\+\_\+\+MISO = 5}
+
+Port for MISO \mbox{\Hypertarget{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}\label{nfc_8c_ac2f4403eb301778e26cd97af7069dbd4}} 
+\index{nfc.c@{nfc.c}!PN532\_MOSI@{PN532\_MOSI}}
+\index{PN532\_MOSI@{PN532\_MOSI}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{PN532\_MOSI}{PN532\_MOSI}}
+{\footnotesize\ttfamily const byte PN532\+\_\+\+MOSI = 3}
+
+Port for MOSI \mbox{\Hypertarget{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}\label{nfc_8c_a669b5dd8e014bbee2273937720e8da3d}} 
+\index{nfc.c@{nfc.c}!PN532\_SCK@{PN532\_SCK}}
+\index{PN532\_SCK@{PN532\_SCK}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{PN532\_SCK}{PN532\_SCK}}
+{\footnotesize\ttfamily const byte PN532\+\_\+\+SCK = 2}
+
+Port for SCK \mbox{\Hypertarget{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}\label{nfc_8c_aaab0d299f8af7cac8b1fed75e0f6f7dd}} 
+\index{nfc.c@{nfc.c}!PN532\_SS@{PN532\_SS}}
+\index{PN532\_SS@{PN532\_SS}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{PN532\_SS}{PN532\_SS}}
+{\footnotesize\ttfamily const byte PN532\+\_\+\+SS = 4}
+
+Port for SS \mbox{\Hypertarget{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}\label{nfc_8c_a9af7a1433732e8daac1765ed05a2a662}} 
+\index{nfc.c@{nfc.c}!ROW@{ROW}}
+\index{ROW@{ROW}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{ROW}{ROW}}
+{\footnotesize\ttfamily const byte ROW = 4}
+
+Number of rows on the keypad \mbox{\Hypertarget{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}\label{nfc_8c_aee0036909013eed07c0f3b1631aa44c5}} 
+\index{nfc.c@{nfc.c}!ROW\_PINS@{ROW\_PINS}}
+\index{ROW\_PINS@{ROW\_PINS}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{ROW\_PINS}{ROW\_PINS}}
+{\footnotesize\ttfamily const byte ROW\+\_\+\+PINS\mbox{[}$\,$\mbox{]} = \{ 10, 11, 12, 13 \}}
+
+Which pins are used as row \mbox{\Hypertarget{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}\label{nfc_8c_a73875bcb633bd4ed8ac573ff9f633181}} 
+\index{nfc.c@{nfc.c}!validChars@{validChars}}
+\index{validChars@{validChars}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{validChars}{validChars}}
+{\footnotesize\ttfamily const char valid\+Chars\mbox{[}$\,$\mbox{]} = \{ \textquotesingle{}1\textquotesingle{}, \textquotesingle{}2\textquotesingle{}, \textquotesingle{}3\textquotesingle{}, \textquotesingle{}A\textquotesingle{}, \textquotesingle{}4\textquotesingle{}, \textquotesingle{}5\textquotesingle{}, \textquotesingle{}6\textquotesingle{}, \textquotesingle{}B\textquotesingle{}, \textquotesingle{}7\textquotesingle{}, \textquotesingle{}8\textquotesingle{}, \textquotesingle{}9\textquotesingle{}, \textquotesingle{}C\textquotesingle{}, \textquotesingle{}$\ast$\textquotesingle{}, \textquotesingle{}0\textquotesingle{}, \textquotesingle{}\#\textquotesingle{}, \textquotesingle{}D\textquotesingle{} \}}
+
+Valid keypresses \mbox{\Hypertarget{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}\label{nfc_8c_a7633da23ea7b21682d7ad1a78db702af}} 
+\index{nfc.c@{nfc.c}!validIDs@{validIDs}}
+\index{validIDs@{validIDs}!nfc.c@{nfc.c}}
+\doxysubsubsection{\texorpdfstring{validIDs}{validIDs}}
+{\footnotesize\ttfamily const uint8\+\_\+t valid\+IDs\mbox{[}$\,$\mbox{]} = \{ 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 \}}
+
+List of valid IDs 
