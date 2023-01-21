@@ -1,17 +1,18 @@
-#define DEBUG 1
+#define DEBUG 1 /*!< If debug mode is to be used*/
+
 
 #ifdef DEBUG
-#define DEBUG_PRINT(x) Serial.print(x)
-#define DEBUG_PRINTLN(x) Serial.println(x)
+#define DEBUG_PRINT(x) Serial.print(x)      /*!< Redefines Serial.print(x) as DEBUG_PRINT so it only outputs to the serial monitor, if DEBUG is defined */
+#define DEBUG_PRINTLN(x) Serial.println(x)   /*!< Redefines Serial.println(x) as DEBUG_PRINTLN so it only outputs to the serial monitor, if DEBUG is defined */
 #else
 #define DEBUG_PRINT(x)
 #define DEBUG_PRINTLN(x)
 #endif
 
 
-#define DEFAULT_DELAY 1500
+#define DEFAULT_DELAY 1500  /*!< Default delay used in the lcd_print function */
 
-// LCD has only 16 chars
+
 #define WELCOME_TEXT1 "Willkommen zu"
 #define WELCOME_TEXT2 "Emscopoly!"
 
@@ -27,56 +28,56 @@
 
 void lcd_print(char text1[], char text2[], uint16_t timeout = 1000);
 
-// NP532
+
 const byte PN532_SCK = 2;   /*!< Port for SCK */
-const byte PN532_MOSI = 3;  // Definiere die Anschlüsse für
-const byte PN532_SS = 4;    // die SPI Verbindung zum RFID
-const byte PN532_MISO = 5;  // Board
+const byte PN532_MOSI = 3;  /*!< Port for MOSI */
+const byte PN532_SS = 4;    /*!< Port for SS */
+const byte PN532_MISO = 5;  /*!< Port for MISO */
 
-// Keypad
-const byte COL = 4;
-const byte ROW = 4;
 
-const byte COL_PINS[] = { 6, 7, 8, 9 };
-const byte ROW_PINS[] = { 10, 11, 12, 13 };
+const byte COL = 4; /*!< Number of columns on the keypad */
+const byte ROW = 4; /*!< Number of rows on the keypad */
+
+const byte COL_PINS[] = { 6, 7, 8, 9 };     /*!< Which pins are used as columns */
+const byte ROW_PINS[] = { 10, 11, 12, 13 }; /*!< Which pins are used as row */
 
 const char KEYS[ROW][COL] = {
   { 'D', '#', '0', '*' },
   { 'C', '9', '8', '7' },
   { 'B', '6', '5', '4' },
   { 'A', '3', '2', '1' }
-};
+};    /*!< What each button represents on the keypad */
 
-const char validChars[] = { '1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D' };
+const char validChars[] = { '1', '2', '3', 'A', '4', '5', '6', 'B', '7', '8', '9', 'C', '*', '0', '#', 'D' };   /*!< Valid keypresses */
 
-Keypad keypad = Keypad(makeKeymap(KEYS), ROW_PINS, COL_PINS, ROW, COL);
-
-// Banking system
-const uint8_t validIDs[] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-
-const uint8_t playerCount = 12;
-const uint8_t firstValidPlayerID = 5;
-
-const uint8_t bankID = 3;
-const uint8_t parkingID = 4;
-
-const uint32_t defaultMoney = 30000;
-const uint32_t defaultMoneyBank = 600000;
-
-uint32_t bank[13];
+Keypad keypad = Keypad(makeKeymap(KEYS), ROW_PINS, COL_PINS, ROW, COL);   /*!< Keypad instance */
 
 
-const char names[][16] = { "", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };
+const uint8_t validIDs[] = { 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }; /*!< List of valid IDs */
+
+const uint8_t playerCount = 12;       /*!< Amount of cards */
+const uint8_t firstValidPlayerID = 5; /*!< First valid ID for player */
+
+const uint8_t bankID = 3;             /*!< ID of bank */
+const uint8_t parkingID = 4;          /*!< ID for free parking */
+
+const uint32_t defaultMoney = 30000;        /*!< Starting credits for players */
+const uint32_t defaultMoneyBank = 600000;   /*!< Starting credits for bank */
+
+uint32_t bank[13];  /*!< Int array where bank balance is stored */
 
 
-Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  // Instanz erzeugen mit SPI Protokoll
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+const char names[][16] = { "", "", "", "Stonks", "Parken", "BuegelEisen", "NikeAirMax", "Aida", "Korken", "Zylinder", "Excavator", "La Tortuga", "Big D" };   /*!< Array of names for the players */
+
+
+Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);  /*!< Instanz erzeugen mit SPI Protokoll */
+LiquidCrystal_I2C lcd(0x27, 16, 2);   /*!< Instanz erzeugen für LCD */
 
 
 /**
-* Function setup
+* @brief One time set up of variables and objects
 *
-* One time set up of variabled and objects
+* This function is called right after the Arduino boots up
 */
 
 void setup() {  // Beginn Setup Funktion
@@ -122,9 +123,9 @@ void setup() {  // Beginn Setup Funktion
 
 
 /**
-* Function loop
+* @brief Main loop function used by Arduino
 *
-* Main loop function used by arduino
+* This function runs indefinitely
 */
 
 void loop() {
@@ -221,13 +222,13 @@ void loop() {
 }
 
 /**
-* lcd_print
+* @brief Displays 2 Strings on the LCD with optional timeout
 *
-* Displays 2 Strings on the LCD with optional timeout
+* Displays the first parameter on the first line, and the second parameter at the second line. Optionally waits before returning.
 *
-* @param text1[]: char array / srting to display on line 1
-* @param text2[]: char array / srting to display on line 2
-* @param timeout (optional): how many miliseconds to display the text
+* @param text1[]: Char array / srting to display on line 1
+* @param text2[]: Char array / srting to display on line 2
+* @param timeout(optional): How many miliseconds to display the text
 * 
 */
 
@@ -241,12 +242,12 @@ void lcd_print(char text1[], char text2[], uint16_t timeout = 1000) {
   if (timeout > 0) delay(timeout);
 }
 
-/*
-  Function: readNFC
-
-  Waits for a properly formated NFC-Tag to be scanned and returns the conatining ID
-
-  returns: ID stored on card
+/**
+* @brief Waits for a properly formated NFC-Tag to be scanned and returns the conatining ID
+*
+* As long as the NFC reader has not detected a valid card, it keeps rescanning for cards. If it has scanned a card, it tests if it contains a valid ID.
+*
+* @return ID stored on card
 */
 
 uint8_t readNFC() {  // Beginne Loop-Funktion
@@ -286,12 +287,12 @@ uint8_t readNFC() {  // Beginne Loop-Funktion
 }
 
 
-/*
-  Function: getKeypadInput
-
-  Waits for a input on the keyboard
-
-  returns: valid char pressed on keypad
+/**
+* @brief Waits for a input on the keyboard
+*
+* If no valid key or no keypress is pressed, it waits until one is pressed.
+*
+* @return A valid char pressed on keypad
 */
 
 char getKeypadInput() {
@@ -310,17 +311,17 @@ char getKeypadInput() {
 }
 
 
-/*
-  Function: transaction
-
-  Subtracts amount from sender and adds amount to receiver
-
-  sender: id from player who wants to send money
-  receiver: id from player who receives the money
-  amount: how much money to send
-
-  returns: if transaction was successful
-
+/**
+* @brief Subtracts amount from sender and adds amount to receiver
+*
+* This function first checks, if the sender has enough money in the bank. If there is enough money, subtracts the amount to send from sender, and adds it to the receiver.
+*
+* @param sender: Id from player who wants to send money
+* @param receiver: Id from player who receives the money
+* @param amount: How much money to send
+*
+* @return bool If transaction was successful
+*
 */
 
 bool transaction(uint8_t sender, uint8_t receiver, uint32_t amount) {
@@ -336,12 +337,12 @@ bool transaction(uint8_t sender, uint8_t receiver, uint32_t amount) {
 }
 
 
-/*
-  Function: cashInput
-
-  Concats chars pressed on Keypad and convertst them to int
-
-  returns: int value of number char array
+/**
+* @brief Concats chars pressed on Keypad and converts them to int
+*
+* Stores the last keypresses in an array, displays the keypresses on the LCD and converts it to an int.
+* 
+* @return: int value of number char array
 */
 
 uint32_t cashinput() {
@@ -379,10 +380,10 @@ uint32_t cashinput() {
 
 
 #ifdef DEBUG
-/*
-  debugPrintBank
-
-  Prints the content of the bank array
+/**
+* This only runs if the DEBUG macro is set
+*
+* Prints the content of the bank array
 */
 
 void debugPrintBank() {
