@@ -210,10 +210,10 @@ void loop() {
       lcd_print("Bitte Card", "dranhalten");
       id1 = readNFC();
 
-      transactionSuccess = transaction(bankID, id1, 200);
+      transactionSuccess = transaction(bankID, id1, 4000);
 
       if (!transactionSuccess) lcd_print("Nicht genug C", "in der Bank");
-      else lcd_print("200C wurden", "ueberwiesen", 2000);
+      else lcd_print("4000 Credits", "ueberwiesen", 2000);
 
       continue;
     }
