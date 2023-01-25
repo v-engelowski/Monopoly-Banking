@@ -2,8 +2,6 @@
 
 Monopoly Banking selber nachgebaut und programmiert für die Projektwoche in 01/2023
 
-# **!!NOT FINAL!!**
-
 # Übersicht
 
 Wir arbeiten in einer Gruppe von 4 Leuten, 2 sind für das Design und 2 sind für das Programmieren zuständig.
@@ -33,5 +31,7 @@ Wenn ein Spieler auf das "Frei Parken" Feld kommt, darf dieser den gesamten Pott
 # Program
 
 ## Flowchart
+
+Tatsächlicher Programmablauf leicht abweichend
 
 <img src='./img/Monopoly-Banking-Projektwoche.png'>
